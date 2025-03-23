@@ -1,0 +1,73 @@
+# --- Build directories ---
+/build*/
+*/build*/
+**/CMakeFiles/
+**/CMakeScripts/
+*.cmake
+
+# --- CMake generated files ---
+CMakeCache.txt
+CMakeUserPresets.json
+Makefile
+*.ninja
+*.ninja_deps
+*.ninja_log
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# --- Binarios y objetos ---
+*.exe
+*.out
+*.app
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.o
+*.obj
+*.lo
+*.la
+*.ilk
+*.pdb
+*.exp
+
+# --- Dependencias externas ---
+deps/
+external/
+conanbuildinfo.*
+conaninfo.txt
+conan_imports_*/
+.vcpkg/
+
+# --- Archivos temporales e IDE ---
+.vs/
+.vscode/
+.idea/
+*.sln
+*.vcxproj*
+*.user
+*.filters
+*.opensdf
+*.sdf
+*.suo
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Testing y cobertura ---
+coverage/
+*.gcda
+*.gcno
+*.gcov
+CTestTestfile.cmake
+Testing/
+
+# --- Logs y paquetes ---
+*.log
+*.tar.gz
+*.deb
+*.rpm
