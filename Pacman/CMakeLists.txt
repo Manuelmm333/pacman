@@ -1,17 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define the executable
-add_executable(Pacman main.cpp)
+add_executable(Pacman 
+    main.cpp
+    Game.cpp
+)
 
 # Include directories
 target_include_directories(Pacman PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../GameFramework/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../GameFramework/include
 )
 
 # Link libraries if needed
 target_link_libraries(Pacman PRIVATE
-  GameFramework
+    GameFramework
 )
 
 target_compile_features(Pacman PRIVATE ${COMMON_COMPILE_FEAUTRES})
