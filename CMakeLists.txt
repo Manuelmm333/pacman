@@ -14,5 +14,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SFML)
 
-add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system)
+set(COMMON_COMPILE_FEAUTRES cxx_std_17)
+
+# Add subdirectories for executable and libraries
+add_subdirectory(Pacman)
+add_subdirectory(GameFramework)
