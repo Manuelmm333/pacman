@@ -1,20 +1,17 @@
 #include "GraphicComponent.h"
 #include "Entity.h"
 #include "TransformComponent.h"
+#include "Vector2.h"
 
 GraphicComponent::GraphicComponent(const sf::Texture& texture)
  : m_sprite(texture) {}
 
 void GraphicComponent::update(const Entity* parent/*DeltaTime*/)
 {
-  if (parent)
+  if (parent && parent->isDirty())
   {
-    std::weak_ptr<Transform> transformWeak = parent->getComponent<Transform>();
-    if (auto transform = transformWeak.lock())
-    {
-      sf::Vector2f newPosition(transform->position.x, transform->position.y);
-      m_sprite.setPosition(newPosition);
-    }
+    const Vector2& position = parent->getPosition();
+    sf::Vector2f newPosition(position.x, position.y);
+    m_sprite.setPosition(newPosition);
   }
 }
-

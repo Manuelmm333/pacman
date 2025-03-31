@@ -1,16 +1,27 @@
 #include <iostream>
 #include <memory>
+#include <optional>
+#include <string>
+#include <filesystem>
 
 #include "SFML/Graphics.hpp"
 #include "Scene.h"
 #include "Entity.h"
+#include "PhysicsManager.h"
 #include "GraphicComponent.h"
 #include "TransformComponent.h"
+#include "PhysicsComponent.h"
+#include "ScriptComponent.h"
 
 const std::string ASSETS_PATH = "./Assets/";
+static bool isDebug = true;
+
+typedef void (*ComponentScript)(const Entity* parent);
+typedef ComponentScript(*LoadModFunc)();
 
 void updateScene(const Scene& scene);
 void renderScene(const Scene& scene, sf::RenderWindow& window);
+void loadMods(const Scene& scene, Entity* player);
 
 int main()
 {
@@ -21,16 +32,20 @@ int main()
 
   std::shared_ptr<Entity> player = std::make_shared<Entity>();
   player->addComponent<GraphicComponent>(pacmanTexture);
-
+  player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(130.0f, 130.0f));
+  
   std::shared_ptr<Entity> enemy = std::make_shared<Entity>();
   enemy->addComponent<GraphicComponent>(pacmanTexture);
+  enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(130.0f, 130.0f));
 
-  std::weak_ptr<Transform> playerTransformWeak = player->getComponent<Transform>();
-  std::shared_ptr<Transform> playerTransform = playerTransformWeak.lock();
+  enemy->setPosition(150.0f, 150.0f);
 
   Scene scene;
   scene.addEntity(player);
   scene.addEntity(enemy);
+
+  PhysicsManager physicsManager;
+
 
   while (window.isOpen())
   {
@@ -39,31 +54,39 @@ int main()
 
     while (const std::optional event = window.pollEvent())
     {
-      if (event->is<sf::Event::Closed>())
-      {
+      if (event->is<sf::Event::Closed>()) {
         window.close();
       }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
     {
-      playerTransform->position.x -= 1.0f;
+      const Vector2& playerPosition = player->getPosition();
+      player->setPosition(playerPosition.x - 1.0f, playerPosition.y);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
     {
-      playerTransform->position.x += 1.0f;
+
+      const Vector2& playerPosition = player->getPosition();
+      player->setPosition(playerPosition.x + 1.0f, playerPosition.y);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
     {
-      playerTransform->position.y -= 1.0f;
+
+      const Vector2& playerPosition = player->getPosition();
+      player->setPosition(playerPosition.x, playerPosition.y - 1.0f);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
     {
-      playerTransform->position.y += 1.0f;
+
+      const Vector2& playerPosition = player->getPosition();
+      player->setPosition(playerPosition.x, playerPosition.y + 1.0f);
     }
 
     updateScene(scene);
     renderScene(scene, window);
+
+    physicsManager.handleCollisions(scene);
 
     window.display();
   }
@@ -83,11 +106,25 @@ void renderScene(const Scene& scene, sf::RenderWindow& window)
   for (const auto& entity : scene.getEntities())
   {
     std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
-
     if (const std::shared_ptr<GraphicComponent> graphicComponent = graphicComponentWeak.lock())
     {
       const sf::Sprite& sprite = graphicComponent->getSprite();
       window.draw(sprite);
+    }
+
+    if (isDebug) 
+    {
+      std::weak_ptr<PhysicsComponent> physicsComponentWeak = entity->getComponent<PhysicsComponent>();
+      if (const std::shared_ptr<PhysicsComponent> physicsComponent = physicsComponentWeak.lock())
+      {
+        const sf::FloatRect& bounds = physicsComponent->getBounds();
+        sf::RectangleShape debugShape(sf::Vector2f(bounds.size.x, bounds.size.y));
+        debugShape.setPosition(sf::Vector2f(bounds.position.x, bounds.position.y));
+        debugShape.setFillColor(sf::Color::Transparent);
+        debugShape.setOutlineColor(sf::Color::Red);
+        debugShape.setOutlineThickness(1.0f);
+        window.draw(debugShape);
+      }
     }
   }
 }

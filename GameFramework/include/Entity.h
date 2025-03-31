@@ -2,6 +2,21 @@
 
 #include <vector>
 #include <memory>
+#include "Vector2.h"
+
+#ifdef __linux__
+
+# define DYNAMIC_LIBRARY_API __attribute__((visibility("default")))
+
+#else // Windows
+
+# ifdef DYNAMIC_LIBRARY_EXPORTS
+#   define DYNAMIC_LIBRARY_API __declspec(dllexport)
+# else 
+#   define DYNAMIC_LIBRARY_API __declspec(dllimport)
+# endif // DYNAMIC_LIBRARY_EXPORTS
+
+#endif // __linux__
 
 class Component;
 
@@ -19,8 +34,16 @@ public:
 
   void update(/*DeltaTime*/);
 
+  virtual void onCollision(const Entity* other);
+
+  void setPosition(float x, float y);
+  const Vector2& getPosition() const;
+
+  inline bool isDirty() const { return m_isDirty; }
+
  private:
   std::vector<std::shared_ptr<Component>> m_components;
+  bool m_isDirty = false;
 };
 
 template <typename T, typename... Args>

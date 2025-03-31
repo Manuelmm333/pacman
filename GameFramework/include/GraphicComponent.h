@@ -12,9 +12,9 @@ class GraphicComponent : public Component
 
   void update(const Entity* parent/*DeltaTime*/) override;
 
-  inline const sf::Sprite& getSprite() const{
-    return m_sprite;
-  }
+  inline void setTexture(const sf::Texture& texture) { m_sprite.setTexture(texture); }
+
+  inline const sf::Sprite& getSprite() const{  return m_sprite; }
 
  private:
   sf::Sprite m_sprite;
