@@ -4,7 +4,12 @@
 #include "Vector2.h"
 
 GraphicComponent::GraphicComponent(const sf::Texture& texture)
- : m_sprite(texture) {}
+ : m_sprite(texture) 
+{
+  sf::Vector2u textureSize = texture.getSize();
+  float scale = 32.0f / textureSize.x;
+  m_sprite.setScale({scale, scale});
+}
 
 void GraphicComponent::update(const Entity* parent/*DeltaTime*/)
 {

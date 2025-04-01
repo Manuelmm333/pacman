@@ -29,11 +29,11 @@ void Game::createEntities()
 {
   m_player = std::make_shared<Entity>();
   m_player->addComponent<GraphicComponent>(m_pacmanTexture);
-  m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(130.0f, 130.0f));
+  m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
 
   m_enemy = std::make_shared<Entity>();
   m_enemy->addComponent<GraphicComponent>(m_pacmanTexture);
-  m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(130.0f, 130.0f));
+  m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
   m_enemy->setPosition(150.0f, 150.0f);
 
   m_scene.addEntity(m_player);
