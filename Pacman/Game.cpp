@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Entity.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "GraphicComponent.h"
 #include "PhysicsComponent.h"
 #include "MapComponent.h"
@@ -26,7 +27,18 @@ void Game::loadResources()
     throw std::runtime_error("Failed to load pacman texture");
   }
   
+  if (!m_ghostTexture.loadFromFile(ASSETS_PATH + "fantasma.png"))
+  {
+    throw std::runtime_error("Failed to load ghost texture");
+  }
+  
+  if (!m_font.openFromFile(ASSETS_PATH + "Arial.ttf"))
+  {
+    throw std::runtime_error("Failed to load font");
+  }
+  
   m_pacmanTexture.setSmooth(true);
+  m_ghostTexture.setSmooth(true);
 }
 
 void Game::createEntities()
@@ -44,10 +56,11 @@ void Game::createEntities()
   m_scene.addEntity(m_player);
 
   // Create enemy
-  m_enemy = std::make_shared<Entity>();
-  m_enemy->addComponent<GraphicComponent>(m_pacmanTexture);
+  m_enemy = std::make_shared<Enemy>();
+  m_enemy->addComponent<GraphicComponent>(m_ghostTexture);
   m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
   m_enemy->setPosition(150.0f, 150.0f);
+  m_enemy->setWindow(&m_window);
   m_scene.addEntity(m_enemy);
 }
 
