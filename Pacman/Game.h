@@ -4,6 +4,7 @@
 #include <memory>
 #include "Scene.h"
 #include "PhysicsManager.h"
+#include "MapComponent.h"
 
 class Game {
 public:
@@ -24,6 +25,7 @@ private:
     PhysicsManager m_physicsManager;
     std::shared_ptr<Entity> m_player;
     std::shared_ptr<Entity> m_enemy;
+    std::shared_ptr<Entity> m_mapEntity;
     sf::Texture m_pacmanTexture;
     
     static const unsigned int WINDOW_WIDTH = 1920;

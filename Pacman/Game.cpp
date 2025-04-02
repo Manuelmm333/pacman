@@ -1,7 +1,9 @@
 #include "Game.h"
 #include "Entity.h"
+#include "Player.h"
 #include "GraphicComponent.h"
 #include "PhysicsComponent.h"
+#include "MapComponent.h"
 #include "Vector2.h"
 
 const std::string Game::WINDOW_TITLE = "Pacman";
@@ -23,45 +25,55 @@ void Game::loadResources()
   {
     throw std::runtime_error("Failed to load pacman texture");
   }
+  
+  m_pacmanTexture.setSmooth(true);
 }
 
 void Game::createEntities()
 {
-  m_player = std::make_shared<Entity>();
+  // Create map entity
+  m_mapEntity = std::make_shared<Entity>();
+  m_mapEntity->addComponent<MapComponent>(ASSETS_PATH + "map.txt", m_scene);
+  m_scene.addEntity(m_mapEntity);
+
+  // Create player
+  m_player = std::make_shared<Player>();
   m_player->addComponent<GraphicComponent>(m_pacmanTexture);
   m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
+  m_player->setPosition(32.0f, 32.0f); // Start at first tile
+  m_scene.addEntity(m_player);
 
+  // Create enemy
   m_enemy = std::make_shared<Entity>();
   m_enemy->addComponent<GraphicComponent>(m_pacmanTexture);
   m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
   m_enemy->setPosition(150.0f, 150.0f);
-
-  m_scene.addEntity(m_player);
   m_scene.addEntity(m_enemy);
 }
 
 void Game::handleInput()
 {
+  const float MOVEMENT_SPEED = 4.0f; // Increased speed to match tile size better
+  Vector2 newPosition = m_player->getPosition();
+
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
   {
-    const Vector2 &playerPosition = m_player->getPosition();
-    m_player->setPosition(playerPosition.x - 1.0f, playerPosition.y);
+    newPosition.x -= MOVEMENT_SPEED;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
   {
-    const Vector2 &playerPosition = m_player->getPosition();
-    m_player->setPosition(playerPosition.x + 1.0f, playerPosition.y);
+    newPosition.x += MOVEMENT_SPEED;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
   {
-    const Vector2 &playerPosition = m_player->getPosition();
-    m_player->setPosition(playerPosition.x, playerPosition.y - 1.0f);
+    newPosition.y -= MOVEMENT_SPEED;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
   {
-    const Vector2 &playerPosition = m_player->getPosition();
-    m_player->setPosition(playerPosition.x, playerPosition.y + 1.0f);
+    newPosition.y += MOVEMENT_SPEED;
   }
+
+  m_player->setPosition(newPosition.x, newPosition.y);
 }
 
 void Game::update()
@@ -77,8 +89,15 @@ void Game::render()
 {
   m_window.clear(sf::Color::Black);
 
+  if (auto mapComponent = m_mapEntity->getComponent<MapComponent>().lock())
+  {
+    mapComponent->render(m_window);
+  }
+
   for (const auto &entity : m_scene.getEntities())
   {
+    if (entity == m_mapEntity) continue;
+
     std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
     if (const std::shared_ptr<GraphicComponent> graphicComponent = graphicComponentWeak.lock())
     {

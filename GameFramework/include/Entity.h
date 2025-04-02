@@ -19,6 +19,7 @@
 #endif // __linux__
 
 class Component;
+class Scene;
 
 class Entity
 {
@@ -39,10 +40,13 @@ public:
   void setPosition(float x, float y);
   const Vector2& getPosition() const;
 
+  virtual const char* getName() const { return "Entity"; }
+
   inline bool isDirty() const { return m_isDirty; }
 
- private:
+private:
   std::vector<std::shared_ptr<Component>> m_components;
+  Vector2 m_position;
   bool m_isDirty = false;
 };
 

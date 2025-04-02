@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "PhysicsComponent.h"
+#include "WallEntity.h"
 
 #include <iostream>
 
@@ -11,6 +12,11 @@ void PhysicsManager::handleCollisions(const Scene &scene)
 
   for (const auto &entity : entities)
   {
+    if (dynamic_cast<WallEntity*>(entity.get()))
+    {
+      continue;
+    }
+
     // Check if the entity has a PhysicsComponent
     std::weak_ptr<PhysicsComponent> physicsWeak = entity->getComponent<PhysicsComponent>();
     std::shared_ptr<PhysicsComponent> physics = physicsWeak.lock();
@@ -33,50 +39,44 @@ void PhysicsManager::handleCollisions(const Scene &scene)
       {
         continue;
       }
+
+      // Check for intersection between the two entities
       std::optional intersection = physics->getBounds().findIntersection(otherPhysics->getBounds());
       if (!intersection.has_value())
       {
         continue;
       }
 
-      // Check for collision between the two entities
-      sf::FloatRect bounds = physics->getBounds();
-      sf::FloatRect otherBounds = otherPhysics->getBounds();
-      const Vector2 &entityPosition = entity->getPosition();
-      const Vector2 &otherEntityPosition = otherEntity->getPosition();
-
+      // Get the intersection bounds
       sf::FloatRect intersectionBounds = intersection.value();
+      const Vector2 &entityPosition = entity->getPosition();
 
-      // horizontal
-      if (intersectionBounds.size.x < intersectionBounds.size.y)
+      bool isHorizontalCollision = intersectionBounds.size.x < intersectionBounds.size.y;
+      
+      if (isHorizontalCollision)
       {
-        if (bounds.position.x < otherBounds.position.x)
+        if (entityPosition.x < otherEntity->getPosition().x)
         {
-          entity->setPosition(entityPosition.x - intersectionBounds.size.x,
-                              entityPosition.y);
+          entity->setPosition(entityPosition.x - intersectionBounds.size.x, entityPosition.y);
         }
         else
         {
-          entity->setPosition(entityPosition.x + intersectionBounds.size.x,
-                              entityPosition.y);
+          entity->setPosition(entityPosition.x + intersectionBounds.size.x, entityPosition.y);
         }
       }
-      //vertical
-      else 
+      else
       {
-        if (bounds.position.y < otherBounds.position.y)
+        if (entityPosition.y < otherEntity->getPosition().y)
         {
-          entity->setPosition(entityPosition.x,
-                              entityPosition.y - intersectionBounds.size.y);
+          entity->setPosition(entityPosition.x, entityPosition.y - intersectionBounds.size.y);
         }
         else
         {
-          entity->setPosition(entityPosition.x,
-                              entityPosition.y + intersectionBounds.size.y);
+          entity->setPosition(entityPosition.x, entityPosition.y + intersectionBounds.size.y);
         }
       }
 
-      // notify both entities of the collision
+      // Notify both entities of the collision
       entity->onCollision(otherEntity.get());
       otherEntity->onCollision(entity.get());
     }
