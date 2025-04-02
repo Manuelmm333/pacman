@@ -16,7 +16,6 @@ void Enemy::onCollision(const Entity* other)
 {
     if (strcmp(other->getName(), "Player") == 0 && m_window != nullptr)
     {
-        // Cerrar la ventana
         m_window->close();
     }
 } 
