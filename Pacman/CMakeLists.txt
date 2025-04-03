@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.10)
 add_executable(Pacman 
     main.cpp
     Game.cpp
+    Player.cpp
+    Enemy.cpp
+    GameManager.cpp
 )
 
 # Include directories
@@ -15,6 +18,9 @@ target_include_directories(Pacman PRIVATE
 # Link libraries if needed
 target_link_libraries(Pacman PRIVATE
     GameFramework
+    SFML::Graphics
+    SFML::Window
+    SFML::System
 )
 
 target_compile_features(Pacman PRIVATE ${COMMON_COMPILE_FEAUTRES})
