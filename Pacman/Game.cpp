@@ -14,143 +14,174 @@ static bool isDebug = true;
 Game::Game()
     : m_window()
 {
-  m_window.create(sf::VideoMode::getDesktopMode(), WINDOW_TITLE);
-  m_window.setFramerateLimit(FPS_LIMIT);
-  loadResources();
-  createEntities();
+    m_window.create(sf::VideoMode::getDesktopMode(), WINDOW_TITLE);
+    m_window.setFramerateLimit(FPS_LIMIT);
+    
+    GameManager::getInstance().initialize(m_window);
+    
+    loadResources();
+    createEntities();
+    setupGameStates();
+}
+
+void Game::setupGameStates()
+{
+    auto& gameManager = GameManager::getInstance();
+    
+    // Menu state callback
+    gameManager.setStateCallback(GameState::MENU, [this]() {
+        // TODO: Implement menu logic
+    });
+    
+    // Playing state callback
+    gameManager.setStateCallback(GameState::PLAYING, [this]() {
+        handleInput();
+        update();
+        render();
+    });
+    
+    // Paused state callback
+    gameManager.setStateCallback(GameState::PAUSED, [this]() {
+        render(); // Still render the game but don't update
+    });
+    
+    // Game Over state callback
+    gameManager.setStateCallback(GameState::GAME_OVER, [this]() {
+        // TODO: Implement game over logic
+    });
 }
 
 void Game::loadResources()
 {
-  if (!m_pacmanTexture.loadFromFile(ASSETS_PATH + "pacman.png"))
-  {
-    throw std::runtime_error("Failed to load pacman texture");
-  }
-  
-  if (!m_ghostTexture.loadFromFile(ASSETS_PATH + "fantasma.png"))
-  {
-    throw std::runtime_error("Failed to load ghost texture");
-  }
-  
-  if (!m_font.openFromFile(ASSETS_PATH + "Arial.ttf"))
-  {
-    throw std::runtime_error("Failed to load font");
-  }
-  
-  m_pacmanTexture.setSmooth(true);
-  m_ghostTexture.setSmooth(true);
+    if (!m_pacmanTexture.loadFromFile(ASSETS_PATH + "pacman.png"))
+    {
+        throw std::runtime_error("Failed to load pacman texture");
+    }
+    
+    if (!m_ghostTexture.loadFromFile(ASSETS_PATH + "fantasma.png"))
+    {
+        throw std::runtime_error("Failed to load ghost texture");
+    }
+    
+    if (!m_font.openFromFile(ASSETS_PATH + "Arial.ttf"))
+    {
+        throw std::runtime_error("Failed to load font");
+    }
+    
+    m_pacmanTexture.setSmooth(true);
+    m_ghostTexture.setSmooth(true);
 }
 
 void Game::createEntities()
 {
-  // Create map entity
-  m_mapEntity = std::make_shared<Entity>();
-  m_mapEntity->addComponent<MapComponent>(ASSETS_PATH + "map.txt", m_scene);
-  m_scene.addEntity(m_mapEntity);
+    // Create map entity
+    m_mapEntity = std::make_shared<Entity>();
+    m_mapEntity->addComponent<MapComponent>(ASSETS_PATH + "map.txt", m_scene);
+    m_scene.addEntity(m_mapEntity);
 
-  // Create player
-  m_player = std::make_shared<Player>();
-  m_player->addComponent<GraphicComponent>(m_pacmanTexture);
-  m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
-  m_player->setPosition(32.0f, 32.0f); // Start at first tile
-  m_scene.addEntity(m_player);
+    // Create player
+    m_player = std::make_shared<Player>();
+    m_player->addComponent<GraphicComponent>(m_pacmanTexture);
+    m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
+    m_player->setPosition(32.0f, 32.0f); // Start at first tile
+    m_scene.addEntity(m_player);
 
-  // Create enemy
-  m_enemy = std::make_shared<Enemy>();
-  m_enemy->addComponent<GraphicComponent>(m_ghostTexture);
-  m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
-  m_enemy->setPosition(150.0f, 150.0f);
-  m_enemy->setWindow(&m_window);
-  m_scene.addEntity(m_enemy);
+    // Create enemy
+    m_enemy = std::make_shared<Enemy>();
+    m_enemy->addComponent<GraphicComponent>(m_ghostTexture);
+    m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
+    m_enemy->setPosition(150.0f, 150.0f);
+    m_enemy->setWindow(&m_window);
+    m_scene.addEntity(m_enemy);
 }
 
 void Game::handleInput()
 {
-  const float MOVEMENT_SPEED = 4.0f; // Increased speed to match tile size better
-  Vector2 newPosition = m_player->getPosition();
+    const float MOVEMENT_SPEED = 4.0f;
+    Vector2 newPosition = m_player->getPosition();
 
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-  {
-    newPosition.x -= MOVEMENT_SPEED;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-  {
-    newPosition.x += MOVEMENT_SPEED;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-  {
-    newPosition.y -= MOVEMENT_SPEED;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-  {
-    newPosition.y += MOVEMENT_SPEED;
-  }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    {
+        newPosition.x -= MOVEMENT_SPEED;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        newPosition.x += MOVEMENT_SPEED;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    {
+        newPosition.y -= MOVEMENT_SPEED;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+    {
+        newPosition.y += MOVEMENT_SPEED;
+    }
 
-  m_player->setPosition(newPosition.x, newPosition.y);
+    m_player->setPosition(newPosition.x, newPosition.y);
 }
 
 void Game::update()
 {
-  for (const auto &entity : m_scene.getEntities())
-  {
-    entity->update();
-  }
-  m_physicsManager.handleCollisions(m_scene);
+    for (const auto &entity : m_scene.getEntities())
+    {
+        entity->update();
+    }
+    m_physicsManager.handleCollisions(m_scene);
 }
 
 void Game::render()
 {
-  m_window.clear(sf::Color::Black);
+    m_window.clear(sf::Color::Black);
 
-  if (auto mapComponent = m_mapEntity->getComponent<MapComponent>().lock())
-  {
-    mapComponent->render(m_window);
-  }
-
-  for (const auto &entity : m_scene.getEntities())
-  {
-    if (entity == m_mapEntity) continue;
-
-    std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
-    if (const std::shared_ptr<GraphicComponent> graphicComponent = graphicComponentWeak.lock())
+    if (auto mapComponent = m_mapEntity->getComponent<MapComponent>().lock())
     {
-      const sf::Sprite &sprite = graphicComponent->getSprite();
-      m_window.draw(sprite);
+        mapComponent->render(m_window);
     }
 
-    if (isDebug)
+    for (const auto &entity : m_scene.getEntities())
     {
-      std::weak_ptr<PhysicsComponent> physicsComponentWeak = entity->getComponent<PhysicsComponent>();
-      if (const std::shared_ptr<PhysicsComponent> physicsComponent = physicsComponentWeak.lock())
-      {
-        const sf::FloatRect &bounds = physicsComponent->getBounds();
-        sf::RectangleShape debugShape(sf::Vector2f(bounds.size.x, bounds.size.y));
-        debugShape.setPosition(sf::Vector2f(bounds.position.x, bounds.position.y));
-        debugShape.setFillColor(sf::Color::Transparent);
-        debugShape.setOutlineColor(sf::Color::Red);
-        debugShape.setOutlineThickness(1.0f);
-        m_window.draw(debugShape);
-      }
-    }
-  }
+        if (entity == m_mapEntity) continue;
 
-  m_window.display();
+        std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
+        if (const std::shared_ptr<GraphicComponent> graphicComponent = graphicComponentWeak.lock())
+        {
+            const sf::Sprite &sprite = graphicComponent->getSprite();
+            m_window.draw(sprite);
+        }
+
+        if (isDebug)
+        {
+            std::weak_ptr<PhysicsComponent> physicsComponentWeak = entity->getComponent<PhysicsComponent>();
+            if (const std::shared_ptr<PhysicsComponent> physicsComponent = physicsComponentWeak.lock())
+            {
+                const sf::FloatRect &bounds = physicsComponent->getBounds();
+                sf::RectangleShape debugShape(sf::Vector2f(bounds.size.x, bounds.size.y));
+                debugShape.setPosition(sf::Vector2f(bounds.position.x, bounds.position.y));
+                debugShape.setFillColor(sf::Color::Transparent);
+                debugShape.setOutlineColor(sf::Color::Red);
+                debugShape.setOutlineThickness(1.0f);
+                m_window.draw(debugShape);
+            }
+        }
+    }
+
+    m_window.display();
 }
 
 void Game::run()
 {
-  while (m_window.isOpen())
-  {
-    while (const std::optional event = m_window.pollEvent())
+    while (m_window.isOpen())
     {
-      if (event->is<sf::Event::Closed>())
-      {
-        m_window.close();
-      }
-    }
+        while (const std::optional event = m_window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+            {
+                m_window.close();
+            }
+            
+            GameManager::getInstance().handleEvents(*event);
+        }
 
-    handleInput();
-    update();
-    render();
-  }
+        GameManager::getInstance().update();
+    }
 }

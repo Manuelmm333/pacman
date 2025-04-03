@@ -7,6 +7,7 @@
 #include "PhysicsManager.h"
 #include "MapComponent.h"
 #include "Enemy.h"
+#include "GameManager.h"
 
 class Game {
 public:
@@ -21,6 +22,7 @@ private:
     void render();
     void loadResources();
     void createEntities();
+    void setupGameStates();
 
     sf::RenderWindow m_window;
     Scene m_scene;

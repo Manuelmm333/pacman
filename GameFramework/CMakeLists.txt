@@ -9,6 +9,7 @@ add_library(GameFramework STATIC
   src/MapComponent.cpp
   src/Player.cpp
   src/Enemy.cpp
+  src/GameManager.cpp
 )
 
 target_include_directories(GameFramework PUBLIC 
