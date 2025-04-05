@@ -14,7 +14,8 @@ class GraphicComponent : public Component
 
   inline void setTexture(const sf::Texture& texture) { m_sprite.setTexture(texture); }
 
-  inline const sf::Sprite& getSprite() const{  return m_sprite; }
+  inline const sf::Sprite& getSprite() const { return m_sprite; }
+  inline sf::Sprite& getSprite() { return m_sprite; }
 
  private:
   sf::Sprite m_sprite;

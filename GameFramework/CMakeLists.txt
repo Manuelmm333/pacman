@@ -7,6 +7,7 @@ add_library(GameFramework STATIC
   src/PhysicsManager.cpp
   src/ScriptComponent.cpp
   src/MapComponent.cpp
+  src/ModManager.cpp
 )
 
 target_include_directories(GameFramework PUBLIC 

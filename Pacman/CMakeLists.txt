@@ -32,3 +32,5 @@ add_custom_command(
         $<TARGET_FILE_DIR:Pacman>/Assets
     COMMENT "Copiando assets para Pacman"
 )
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PacmanMods ${CMAKE_CURRENT_BINARY_DIR}/PacmanMods)

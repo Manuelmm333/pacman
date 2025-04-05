@@ -6,10 +6,12 @@
 #include "PhysicsComponent.h"
 #include "MapComponent.h"
 #include "Vector2.h"
+#include "ModManager.h"
 
 const std::string Game::WINDOW_TITLE = "Pacman";
 const std::string ASSETS_PATH = "./Assets/";
 static bool isDebug = true;
+typedef void(*LoadModFunction)(Entity*);
 
 Game::Game()
     : m_window()
@@ -70,6 +72,8 @@ void Game::loadResources()
     
     m_pacmanTexture.setSmooth(true);
     m_ghostTexture.setSmooth(true);
+
+    ModManager::getInstance().loadMod("libInvisibleGhost.dll");
 }
 
 void Game::createEntities()
@@ -93,6 +97,7 @@ void Game::createEntities()
     m_enemy->setPosition(150.0f, 150.0f);
     m_enemy->setWindow(&m_window);
     m_scene.addEntity(m_enemy);
+    
 }
 
 void Game::handleInput()
@@ -141,6 +146,11 @@ void Game::render()
     for (const auto &entity : m_scene.getEntities())
     {
         if (entity == m_mapEntity) continue;
+
+        if (entity == m_enemy)
+        {
+            ModManager::getInstance().applyMods(entity.get());
+        }
 
         std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
         if (const std::shared_ptr<GraphicComponent> graphicComponent = graphicComponentWeak.lock())

@@ -8,7 +8,7 @@
 #include "MapComponent.h"
 #include "Enemy.h"
 #include "GameManager.h"
-
+#include <windows.h>
 class Game {
 public:
     Game();
@@ -34,6 +34,7 @@ private:
     sf::Texture m_ghostTexture;
     sf::Font m_font;
     std::string m_gameOverText;
+    HMODULE mod;
     
     static const unsigned int WINDOW_WIDTH = 1920;
     static const unsigned int WINDOW_HEIGHT = 1080;

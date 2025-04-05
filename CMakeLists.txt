@@ -19,3 +19,8 @@ set(COMMON_COMPILE_FEAUTRES cxx_std_17)
 # Add subdirectories for executable and libraries
 add_subdirectory(Pacman)
 add_subdirectory(GameFramework)
+
+# Habilitar la generación de DLLs en Windows
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)  # Exporta símbolos automáticamente
+endif()
