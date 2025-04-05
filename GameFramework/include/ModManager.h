@@ -16,13 +16,13 @@ class ModManager {
 public:
     static ModManager& getInstance();
     
-    void loadMod(const std::string& modPath);
+    void loadMod(const std::string& modName);
+    void applyMods(Entity* entity, const std::string& specificMod = "");
     void unloadMods();
-    void applyMods(Entity* entity);
+    ~ModManager();
     
 private:
     ModManager() = default;
-    ~ModManager();
     ModManager(const ModManager&) = delete;
     ModManager& operator=(const ModManager&) = delete;
     
@@ -36,4 +36,5 @@ private:
     };
     
     std::vector<Mod> m_mods;
+    std::vector<std::string> m_modNames;
 }; 

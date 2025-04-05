@@ -1,4 +1,5 @@
 #include "ModManager.h"
+#include <Windows.h>
 #include <iostream>
 
 ModManager& ModManager::getInstance() {
@@ -6,57 +7,38 @@ ModManager& ModManager::getInstance() {
     return instance;
 }
 
-void ModManager::loadMod(const std::string& modPath) {
-#ifdef _WIN32
-    HMODULE handle = LoadLibraryA(modPath.c_str());
-    if (!handle) {
-        std::cerr << "Error loading mod: " << GetLastError() << std::endl;
-        return;
+void ModManager::loadMod(const std::string& modName) {
+    std::string dllPath = "lib" + modName + ".dll";
+    HMODULE hModule = LoadLibraryA(dllPath.c_str());
+    if (hModule) {
+        auto loadModFunc = (void(*)(Entity*))GetProcAddress(hModule, "loadMod");
+        if (loadModFunc) {
+            Mod mod;
+            mod.handle = hModule;
+            mod.modFunction = loadModFunc;
+            m_mods.push_back(mod);
+            m_modNames.push_back(modName);
+            std::cout << "Loaded mod: " << modName << std::endl;
+        }
     }
-#else
-    void* handle = dlopen(modPath.c_str(), RTLD_LAZY);
-    if (!handle) {
-        std::cerr << "Error loading mod: " << dlerror() << std::endl;
-        return;
+}
+
+void ModManager::applyMods(Entity* entity, const std::string& specificMod) {
+    if (!entity) return;
+    
+    for (size_t i = 0; i < m_mods.size(); ++i) {
+        if (specificMod.empty() || m_modNames[i] == specificMod) {
+            m_mods[i].modFunction(entity);
+        }
     }
-#endif
-
-    typedef void(*ModFunction)(Entity*);
-#ifdef _WIN32
-    ModFunction modFunc = (ModFunction)GetProcAddress(handle, "loadMod");
-#else
-    ModFunction modFunc = (ModFunction)dlsym(handle, "loadMod");
-#endif
-
-    if (!modFunc) {
-        std::cerr << "Error getting mod function" << std::endl;
-#ifdef _WIN32
-        FreeLibrary(handle);
-#else
-        dlclose(handle);
-#endif
-        return;
-    }
-
-    m_mods.push_back({handle, modFunc});
-    std::cout << "Mod loaded successfully: " << modPath << std::endl;
 }
 
 void ModManager::unloadMods() {
     for (auto& mod : m_mods) {
-#ifdef _WIN32
         FreeLibrary(mod.handle);
-#else
-        dlclose(mod.handle);
-#endif
     }
     m_mods.clear();
-}
-
-void ModManager::applyMods(Entity* entity) {
-    for (auto& mod : m_mods) {
-        mod.modFunction(entity);
-    }
+    m_modNames.clear();
 }
 
 ModManager::~ModManager() {
