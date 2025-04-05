@@ -87,11 +87,11 @@ void Game::createEntities()
     m_player = std::make_shared<Player>();
     m_player->addComponent<GraphicComponent>(m_pacmanTexture);
     m_player->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
-    m_player->setPosition(32.0f, 32.0f); // Start at first tile
+    m_player->setPosition(32.0f, 32.0f);
     m_scene.addEntity(m_player);
 
     // Create enemy
-    m_enemy = std::make_shared<Enemy>();
+    m_enemy = std::make_shared<Enemy>(m_scene);
     m_enemy->addComponent<GraphicComponent>(m_ghostTexture);
     m_enemy->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
     m_enemy->setPosition(150.0f, 150.0f);
@@ -99,7 +99,7 @@ void Game::createEntities()
     m_scene.addEntity(m_enemy);
 
     // Create enemy
-    m_enemy2 = std::make_shared<Enemy>();
+    m_enemy2 = std::make_shared<Enemy>(m_scene);
     m_enemy2->addComponent<GraphicComponent>(m_ghostTexture);
     m_enemy2->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
     m_enemy2->setPosition(86.0f, 150.0f);
@@ -111,27 +111,9 @@ void Game::createEntities()
 
 void Game::handleInput()
 {
-    const float MOVEMENT_SPEED = 4.0f;
-    Vector2 newPosition = m_player->getPosition();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-    {
-        newPosition.x -= MOVEMENT_SPEED;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-    {
-        newPosition.x += MOVEMENT_SPEED;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-    {
-        newPosition.y -= MOVEMENT_SPEED;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-    {
-        newPosition.y += MOVEMENT_SPEED;
-    }
-
-    m_player->setPosition(newPosition.x, newPosition.y);
+    m_player->handleInput();
+    m_enemy->handleInput();
+    m_enemy2->handleInput();
 }
 
 void Game::update()

@@ -34,6 +34,7 @@ public:
   std::weak_ptr<T> getComponent() const;
 
   void update(/*DeltaTime*/);
+  virtual void handleInput() {} // Default empty implementation
 
   virtual void onCollision(const Entity* other);
 
@@ -43,6 +44,13 @@ public:
   virtual const char* getName() const { return "Entity"; }
 
   inline bool isDirty() const { return m_isDirty; }
+
+  float getMovementSpeed() const { return m_movementSpeed; }
+  void setMovementSpeed(float speed) { m_movementSpeed = speed; }
+
+protected:
+  static constexpr float DEFAULT_MOVEMENT_SPEED = 4.0f;
+  float m_movementSpeed = DEFAULT_MOVEMENT_SPEED;
 
 private:
   std::vector<std::shared_ptr<Component>> m_components;

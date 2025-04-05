@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include <SFML/Window/Keyboard.hpp>
 
 class Player : public Entity
 {
@@ -7,6 +8,7 @@ public:
     Player();
     ~Player() override = default;
 
-    const char* getName() const override;
+    void handleInput() override;
+    const char* getName() const override { return "Player"; }
     void onCollision(const Entity* other) override;
 }; 
