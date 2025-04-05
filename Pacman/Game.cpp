@@ -97,6 +97,15 @@ void Game::createEntities()
     m_enemy->setPosition(150.0f, 150.0f);
     m_enemy->setWindow(&m_window);
     m_scene.addEntity(m_enemy);
+
+    // Create enemy
+    m_enemy2 = std::make_shared<Enemy>();
+    m_enemy2->addComponent<GraphicComponent>(m_ghostTexture);
+    m_enemy2->addComponent<PhysicsComponent>(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(32.0f, 32.0f));
+    m_enemy2->setPosition(86.0f, 150.0f);
+    m_enemy2->setWindow(&m_window);
+    m_scene.addEntity(m_enemy2);
+
     
 }
 

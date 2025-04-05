@@ -29,6 +29,7 @@ private:
     PhysicsManager m_physicsManager;
     std::shared_ptr<Entity> m_player;
     std::shared_ptr<Enemy> m_enemy;
+    std::shared_ptr<Enemy> m_enemy2;
     std::shared_ptr<Entity> m_mapEntity;
     sf::Texture m_pacmanTexture;
     sf::Texture m_ghostTexture;
