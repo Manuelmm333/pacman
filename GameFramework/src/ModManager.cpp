@@ -20,7 +20,16 @@ void ModManager::loadMod(const std::string& modName) {
             m_modNames.push_back(modName);
             std::cout << "Loaded mod: " << modName << std::endl;
         }
+        else
+        {
+            std::cout << "Error : Loaded mod: " << modName << std::endl;
+        }
     }
+    else
+    {
+        std::cout << "Error : Loaded mod: " << modName << std::endl;
+    }
+    
 }
 
 void ModManager::applyMods(Entity* entity, const std::string& specificMod) {

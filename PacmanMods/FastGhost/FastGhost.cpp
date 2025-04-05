@@ -1,11 +1,12 @@
 #include "FastGhost.h"
 #include <iostream>
 
-void loadMod(Entity* entity) {
+#define DYNAMIC_LIBRARY_API __declspec(dllexport)
+
+extern "C" DYNAMIC_LIBRARY_API void loadMod(Entity* entity) {
     if (entity != nullptr) {
-        // Aumentar la velocidad del enemigo
         float currentSpeed = entity->getMovementSpeed();
-        entity->setMovementSpeed(currentSpeed * 2.0f); // Duplicar la velocidad
+        entity->setMovementSpeed(currentSpeed * 1.5f); 
         std::cout << "FastGhost mod applied! New speed: " << entity->getMovementSpeed() << std::endl;
     }
 } 

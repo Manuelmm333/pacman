@@ -73,8 +73,8 @@ void Game::loadResources()
     m_pacmanTexture.setSmooth(true);
     m_ghostTexture.setSmooth(true);
 
-    ModManager::getInstance().loadMod("libInvisibleGhost.dll");
-    ModManager::getInstance().loadMod("libFastGhost.dll");
+    ModManager::getInstance().loadMod("InvisibleGhost");
+    ModManager::getInstance().loadMod("FastGhost");
 }
 
 void Game::createEntities()
@@ -106,8 +106,8 @@ void Game::createEntities()
     m_enemy2->setPosition(86.0f, 150.0f);
     m_enemy2->setWindow(&m_window);
     m_scene.addEntity(m_enemy2);
+    ModManager::getInstance().applyMods(m_enemy2.get(), "FastGhost");
 
-    
 }
 
 void Game::handleInput()
@@ -142,10 +142,6 @@ void Game::render()
         if (entity == m_enemy)
         {
             ModManager::getInstance().applyMods(entity.get(), "InvisibleGhost");
-        }
-        else if (entity == m_enemy2)
-        {
-            ModManager::getInstance().applyMods(entity.get(), "FastGhost");
         }
 
         std::weak_ptr<GraphicComponent> graphicComponentWeak = entity->getComponent<GraphicComponent>();
