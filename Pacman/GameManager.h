@@ -13,7 +13,11 @@ class GameManager
 public:
     static GameManager& getInstance();
     
-    void initialize(sf::RenderWindow& window);
+    // Si vas a guardar como puntero, recomiendo usar un puntero en sí.
+    // incluso diría uno inteligente y guardar un weak, pero al menos si lo guardas como raw pointer
+    // ser explicito y recibirlo como raw pointer
+    // Incluso podrías guardarlo como const para también ser explicito que esta clase no es dueña del puntero
+    void initialize(sf::RenderWindow* window);
     void update();
     void render();
     void handleEvents(const sf::Event& event);

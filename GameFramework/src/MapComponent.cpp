@@ -5,6 +5,14 @@
 #include <fstream>
 #include <iostream>
 
+namespace MapComponentConstants
+{
+  static constexpr float TILE_SIZE = 32.0f;
+  static constexpr char WALL_CHAR = '#';
+  static constexpr char EMPTY_CHAR = '.';
+} // namespace MapComponentConstants
+using namespace MapComponentConstants;
+
 MapComponent::MapComponent(const std::string &mapPath, Scene &scene)
     : m_scene(scene)
 {
@@ -57,7 +65,21 @@ void MapComponent::createWallEntities()
 
 void MapComponent::update(const Entity *parent /*DeltaTime*/)
 {
-  // No update logic needed for the map
+  for (size_t y = 0; y < m_map.size(); ++y)
+  {
+    for (size_t x = 0; x < m_map[y].size(); ++x)
+    {
+      if (m_map[y][x] == WALL_CHAR)
+      {
+        const sf::Vector2 currentPos = m_wallShape.getPosition();
+        const sf::Vector2f newPos(x * TILE_SIZE, y * TILE_SIZE);
+        if (currentPos != newPos)
+        {
+          m_wallShape.setPosition(newPos);
+        }
+      }
+    }
+  }
 }
 
 void MapComponent::render(sf::RenderWindow &window) const
@@ -68,7 +90,10 @@ void MapComponent::render(sf::RenderWindow &window) const
     {
       if (m_map[y][x] == WALL_CHAR)
       {
-        m_wallShape.setPosition({x * TILE_SIZE, y * TILE_SIZE});
+        // Estoq uedaría mucho mejor en el update, así no tendías que 
+        // poner el m_wallShape como mutable.
+        // Quizá podrías incluso ponerle un diurty flag
+        //m_wallShape.setPosition({x * TILE_SIZE, y * TILE_SIZE});
         window.draw(m_wallShape);
       }
     }

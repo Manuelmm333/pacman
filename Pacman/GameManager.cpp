@@ -7,9 +7,9 @@ GameManager& GameManager::getInstance()
     return instance;
 }
 
-void GameManager::initialize(sf::RenderWindow& window)
+void GameManager::initialize(sf::RenderWindow* window)
 {
-    m_window = &window;
+    m_window = window;
 }
 
 void GameManager::update()

@@ -4,7 +4,8 @@
 class WallEntity : public Entity
 {
 public:
-  const char* getName() const override { return "Wall"; }
+  // probablemente constexpr sea mejor ya que esto nunca va a cambiar
+  constexpr const char* getName() const override { return "Wall"; }
   
   void onCollision(const Entity* other) override
   {

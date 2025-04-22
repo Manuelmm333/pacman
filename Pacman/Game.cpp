@@ -8,6 +8,7 @@
 #include "Vector2.h"
 #include "ModManager.h"
 
+// Buen uso de constantes!
 const std::string Game::WINDOW_TITLE = "Pacman";
 const std::string ASSETS_PATH = "./Assets/";
 static bool isDebug = true;
@@ -19,7 +20,8 @@ Game::Game()
     m_window.create(sf::VideoMode::getDesktopMode(), WINDOW_TITLE);
     m_window.setFramerateLimit(FPS_LIMIT);
     
-    GameManager::getInstance().initialize(m_window);
+    // Al recibir el puntero ahora, necesitamos mandar su dirección de memoria
+    GameManager::getInstance().initialize(&m_window);
     
     loadResources();
     createEntities();
@@ -55,6 +57,9 @@ void Game::setupGameStates()
 
 void Game::loadResources()
 {
+    // Buen uso de chequeos. 
+    // En un caso real probablemente aquí se cargarían o se generarían texturas default
+    // Para evitar que el juego crashee, pero eso depende de la lógica del juego
     if (!m_pacmanTexture.loadFromFile(ASSETS_PATH + "pacman.png"))
     {
         throw std::runtime_error("Failed to load pacman texture");
@@ -73,6 +78,10 @@ void Game::loadResources()
     m_pacmanTexture.setSmooth(true);
     m_ghostTexture.setSmooth(true);
 
+    // Esto estaría mejor si se cargara desde un archivo de mods, por ejemplo
+    // o que se cargue desde un directorio específico, por ejemplo todo lo que esté en "Mods"
+    // Así "cualquiera"podría construir un mod y meterlo ahí
+    // ModManager::getInstance().loadMods();
     ModManager::getInstance().loadMod("InvisibleGhost");
     ModManager::getInstance().loadMod("FastGhost");
 }
@@ -112,6 +121,9 @@ void Game::createEntities()
 
 void Game::handleInput()
 {
+    // Bien! 
+    // Igual para "mejor" manejo se podría hacer a través de eventos y entonces cada entidad se suscribiría
+    // al evento correspondiente.Pero esto no está nada mal.
     m_player->handleInput();
     m_enemy->handleInput();
     m_enemy2->handleInput();
@@ -141,6 +153,10 @@ void Game::render()
 
         if (entity == m_enemy)
         {
+            //Aquí quizá sería mejor pensar en una forma data-driven de aplicar los mods
+            // porque de esta forma se está acoplando el mod a la entidad
+            // y no a la lógica del juego
+            // Quizá podría venir de un archivo el en qué parte aplicarlo y el mod en sí tener info de suscripción
             ModManager::getInstance().applyMods(entity.get(), "InvisibleGhost");
         }
 

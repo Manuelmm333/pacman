@@ -9,6 +9,6 @@ public:
     ~Player() override = default;
 
     void handleInput() override;
-    const char* getName() const override { return "Player"; }
+    constexpr char* getName() const override { return "Player"; }
     void onCollision(const Entity* other) override;
 }; 

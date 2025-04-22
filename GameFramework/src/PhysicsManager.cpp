@@ -12,7 +12,10 @@ void PhysicsManager::handleCollisions(const Scene &scene)
 
   for (const auto &entity : entities)
   {
-    if (dynamic_cast<WallEntity*>(entity.get()))
+    // Aqui ya que entity es un shared pointer, podrías usar el cast de la std
+    // de esta forma evitas el uso de punteros crudos
+    //if (dynamic_cast<WallEntity*>(entity.get()))
+    if (std::dynamic_pointer_cast<WallEntity>(entity))
     {
       continue;
     }
@@ -48,10 +51,10 @@ void PhysicsManager::handleCollisions(const Scene &scene)
       }
 
       // Get the intersection bounds
-      sf::FloatRect intersectionBounds = intersection.value();
+      const sf::FloatRect intersectionBounds = intersection.value();
       const Vector2 &entityPosition = entity->getPosition();
 
-      bool isHorizontalCollision = intersectionBounds.size.x < intersectionBounds.size.y;
+      const bool isHorizontalCollision = intersectionBounds.size.x < intersectionBounds.size.y;
       
       if (isHorizontalCollision)
       {
