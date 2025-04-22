@@ -8,7 +8,12 @@ add_library(GameFramework STATIC
   src/ScriptComponent.cpp
   src/MapComponent.cpp
   src/ModManager.cpp
+  src/Vector2.cpp
 )
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
+
 
 target_include_directories(GameFramework PUBLIC 
   ${CMAKE_CURRENT_SOURCE_DIR}/include

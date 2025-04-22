@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Define the executable
 add_executable(Pacman 
     main.cpp

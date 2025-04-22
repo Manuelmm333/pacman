@@ -44,5 +44,7 @@ const Vector2& Entity::getPosition() const
   {
     return transform->position;
   }
-  return Vector2();
+
+  // Returning this static Vector avoids returning a referenco to a temporary object
+  return Vector2::ZERO; 
 }
